@@ -1,0 +1,72 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  favourites Favourites[]
+  cartItems  CartItem[]
+
+  @@map("user") // 👈 таблица должна называться именно user
+}
+
+model Wine {
+  id           Int          @id @default(autoincrement())
+  name         String
+  batchNumber  String?      @map("batch_number")
+  vintage      Int?         @map("vintage_year")
+  kind         String?
+  type         String?      @map("wine_type")
+  color        String?
+  grapeVariety String?      @map("grape_variety")
+  volume       String?      @map("volume")
+  producer     String?      @map("producer")
+  region       String?      @map("region")
+  packaging    String?      @map("packaging")
+  price        Decimal?     @map("price_uah")
+  description  String?      @map("description")
+  photoUrl     String?      @map("photo_url")
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt       @map("updated_at")
+
+  favourites Favourites[]
+  cartItems  CartItem[]
+
+  @@map("wine")
+}
+
+model Favourites {
+  id     Int  @id @default(autoincrement())
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+  wine   Wine @relation(fields: [wineId], references: [id])
+  wineId Int
+
+  @@unique([userId, wineId]) // один пользователь не может добавить одно и то же вино дважды
+  @@map("favourites")
+}
+
+model CartItem {
+  id       Int  @id @default(autoincrement())
+  user     User @relation(fields: [userId], references: [id])
+  userId   Int
+  wine     Wine @relation(fields: [wineId], references: [id])
+  wineId   Int
+  quantity Int  @default(1)
+
+  @@unique([userId, wineId]) // 👈 добавляем этот составной уникальный ключ
+  @@map("cart_items")
+}
