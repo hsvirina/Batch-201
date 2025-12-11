@@ -18,6 +18,8 @@ async function bootstrap() {
     }),
   );
 
+  app.getHttpAdapter().get('/health', (req, res) => res.send('OK'));
+
   const port = process.env.PORT; // только из env
   if (!port) {
     throw new Error('PORT environment variable is not set');
