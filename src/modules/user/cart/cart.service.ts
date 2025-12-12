@@ -25,7 +25,6 @@ export class CartService {
     });
   }
 
-  // ← Добавляем метод remove
   async remove(userId: number, wineId: number) {
     return this.prisma.cartItem.deleteMany({
       where: { userId, wineId },

@@ -7,6 +7,6 @@ export class WineController {
 
   @Get()
   async getAll() {
-    return this.wineService.getAllWines(); // PrismaClient уже знает тип
+    return this.wineService.getAllWines();
   }
 }
