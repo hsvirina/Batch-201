@@ -1,13 +1,15 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module.js';
 import { ValidationPipe } from '@nestjs/common';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: process.env.FRONTEND_URL, // фронт
-    credentials: true, // если нужны токены/куки — но это НЕ мешает
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
   });
 
   app.useGlobalPipes(
@@ -19,15 +21,11 @@ async function bootstrap() {
   );
 
   app.getHttpAdapter().get('/health', (req, res) => res.send('OK'));
+  
+  const port = process.env.PORT || 3000;
+  if (!port) throw new Error('PORT environment variable is not set');
 
-  const port = process.env.PORT; // только из env
-  if (!port) {
-    throw new Error('PORT environment variable is not set');
-  }
-
-  // обязательно указываем хост 0.0.0.0 для Render
   await app.listen(+port, '0.0.0.0');
-
   console.log(`🚀 Server running on http://localhost:${port}`);
 }
 
