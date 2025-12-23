@@ -34,7 +34,7 @@ Built with **NestJS**, **Prisma ORM**, and **JWT authentication**, following bes
 ## Architecture
 
 ```text
-project-root/
+root/
 │
 ├─ src/
 │  ├─ main.ts               # Application entry point
@@ -57,3 +57,4 @@ project-root/
 ├─ package.json
 ├─ tsconfig.json
 └─ README.md
+
