@@ -4,16 +4,27 @@ import { AuthService } from './auth.service.js';
 import { AuthController } from './auth.controller.js';
 import { PrismaModule } from '../../prisma/prisma.module.js';
 import { JwtStrategy } from './strategies/jwt.strategy.js';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
+/**
+ * AuthModule:
+ * - Handles authentication logic (register/login) and JWT strategy.
+ * - Provides JWT access tokens with short expiration (15 minutes) for security.
+ * - Exports AuthService to be used in other modules (e.g., UserModule).
+ */
 @Module({
   imports: [
     PrismaModule,
-    JwtModule.register({
-      secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '1h' },
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '15m' },
+      }),
     }),
   ],
-  providers: [AuthService, JwtStrategy],
+providers: [AuthService, JwtStrategy],
   controllers: [AuthController],
   exports: [AuthService],
 })

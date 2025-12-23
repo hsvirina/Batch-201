@@ -20,10 +20,10 @@ async function bootstrap() {
     }),
   );
 
+  // Health check endpoint
   app.getHttpAdapter().get('/health', (req, res) => res.send('OK'));
   
   const port = process.env.PORT || 3000;
-  if (!port) throw new Error('PORT environment variable is not set');
 
   await app.listen(+port, '0.0.0.0');
   console.log(`🚀 Server running on http://localhost:${port}`);

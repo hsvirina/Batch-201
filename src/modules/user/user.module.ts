@@ -5,6 +5,12 @@ import { PrismaModule } from '../../prisma/prisma.module.js';
 import { FavouritesModule } from './favourites/favourites.module.js';
 import { CartModule } from './cart/cart.module.js';
 
+/**
+ * UserModule:
+ * - Contains user domain logic
+ * - Integrates persistence layer (Prisma)
+ * - Composes related subdomains (Favourites, Cart)
+ */
 @Module({
   imports: [PrismaModule, FavouritesModule, CartModule],
   controllers: [UserController],
