@@ -1,4 +1,11 @@
-import { Controller, Post, Body, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Req,
+  HttpCode,
+} from '@nestjs/common';
 import { AuthService } from './auth.service.js';
 import { RegisterDto } from './dto/register.dto.js';
 import { LoginDto } from './dto/login.dto.js';
@@ -22,7 +29,7 @@ interface AuthRequest extends Request {
  */
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
   /**
    * POST /auth/register
@@ -32,7 +39,7 @@ export class AuthController {
   @Post('register')
   async register(@Body() dto: RegisterDto): Promise<AuthResponseDto> {
     const authData = await this.authService.register(dto);
-    return authData; // authData уже содержит id, email, name, token и даты
+    return authData;
   }
 
   /**
@@ -41,6 +48,7 @@ export class AuthController {
    * Returns access & refresh tokens.
    */
   @Post('login')
+  @HttpCode(200)
   async login(@Body() dto: LoginDto): Promise<AuthResponseDto> {
     const authData = await this.authService.login(dto.email, dto.password);
     return authData; // authData уже содержит все необходимые поля
@@ -54,7 +62,7 @@ export class AuthController {
    */
   @Post('refresh')
   refresh(@Body() body: { userId: number; refreshToken: string }) {
-    return this.authService.refreshTokens(body.userId, body.refreshToken);
+    return this.authService.refreshTokens(body.userId);
   }
 
   /**

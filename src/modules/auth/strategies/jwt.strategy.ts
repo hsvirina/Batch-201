@@ -3,6 +3,12 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
+interface JwtPayload {
+  sub: number;
+  iat?: number;
+  exp?: number;
+}
+
 /**
  * JwtStrategy:
  * - Implements Passport JWT strategy for stateless authentication.
@@ -19,7 +25,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: secret,
-    })
+    });
   }
 
   /**
@@ -27,7 +33,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
    * @param payload - decoded JWT payload
    * @returns object containing userId (sub) to attach to request.user
    */
-  async validate(payload: any) {
+  validate(payload: JwtPayload) {
     return { sub: payload.sub };
   }
 }

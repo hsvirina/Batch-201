@@ -1,4 +1,3 @@
-// favourite.dto.ts
 import { IsInt, Min } from 'class-validator';
 
 /**

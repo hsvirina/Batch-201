@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service.js';
 import { FavouriteDto } from './dto/favourite.dto.js';
+import { Prisma } from '@prisma/client';
 
 /**
  * FavouritesService
@@ -30,9 +31,7 @@ export class FavouritesService {
    */
   async add(userId: number, wineId: number): Promise<FavouriteDto> {
     const wine = await this.prisma.wine.findUnique({ where: { id: wineId } });
-    if (!wine) {
-      throw new NotFoundException('Wine not found');
-    }
+    if (!wine) throw new NotFoundException('Wine not found');
 
     const favourite = await this.prisma.favourites.upsert({
       where: { userId_wineId: { userId, wineId } },
@@ -67,11 +66,7 @@ export class FavouritesService {
    * @param page - Page number (1-based)
    * @param limit - Number of items per page
    */
-  async list(
-    userId: number,
-    page = 1,
-    limit = 20,
-  ): Promise<FavouriteDto[]> {
+  async list(userId: number, page = 1, limit = 20): Promise<FavouriteDto[]> {
     const favourites = await this.prisma.favourites.findMany({
       where: { userId },
       include: { wine: true },
@@ -79,7 +74,7 @@ export class FavouritesService {
       take: limit,
     });
 
-    return favourites.map(this.mapToDto);
+    return favourites.map((fav) => this.mapToDto(fav));
   }
 
   /**
@@ -88,17 +83,19 @@ export class FavouritesService {
    * Ensures that only required and safe wine fields
    * are exposed to API consumers.
    */
-  private mapToDto(fav: any): FavouriteDto {
+  private mapToDto(
+    fav: Prisma.FavouritesGetPayload<{ include: { wine: true } }>,
+  ): FavouriteDto {
     const { wine } = fav;
 
     return {
       wineId: wine.id,
       name: wine.name,
-      vintage: wine.vintage,
-      type: wine.type,
-      color: wine.color,
+      vintage: wine.vintage ?? undefined,
+      type: wine.type ?? undefined,
+      color: wine.color ?? undefined,
       price: wine.price?.toString(),
-      photoUrl: wine.photoUrl,
+      photoUrl: wine.photoUrl ?? undefined,
     };
   }
 }

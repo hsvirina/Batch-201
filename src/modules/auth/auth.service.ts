@@ -18,9 +18,9 @@ export class AuthService {
   private readonly logger = new Logger(AuthService.name);
 
   constructor(
-    private readonly prisma: PrismaService,  // Database access via Prisma
+    private readonly prisma: PrismaService, // Database access via Prisma
     private readonly jwtService: JwtService, // JWT generation and validation
-  ) { }
+  ) {}
 
   /**
    * Registers a new user
@@ -29,7 +29,9 @@ export class AuthService {
    * - Returns user data with an access token
    */
   async register(dto: RegisterDto): Promise<AuthResponseDto> {
-    const existingUser = await this.prisma.user.findUnique({ where: { email: dto.email } });
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+    });
     if (existingUser) throw new BadRequestException('User already exists');
 
     const hashedPassword = await bcrypt.hash(dto.password, 10);
@@ -80,9 +82,9 @@ export class AuthService {
   }
 
   /**
- * Fetches user by email from the database
- * - Used in controller to attach user data to AuthResponseDto
- */
+   * Fetches user by email from the database
+   * - Used in controller to attach user data to AuthResponseDto
+   */
   async getUserByEmail(email: string) {
     return this.prisma.user.findUnique({
       where: { email },
@@ -117,8 +119,7 @@ export class AuthService {
    * - Returns a new access token and refresh token
    * - Can include refresh token validation if stored in DB
    */
-  async refreshTokens(userId: number, refreshToken: string): Promise<{ accessToken: string; refreshToken: string }> {
-    // Optionally validate refreshToken here
+  refreshTokens(userId: number): { accessToken: string; refreshToken: string } {
     const { accessToken } = this.generateTokens(userId);
     const { refreshToken: newRefreshToken } = this.generateTokens(userId);
 
@@ -131,7 +132,7 @@ export class AuthService {
    * - Access tokens will expire automatically after 15 minutes
    * - Can be extended to implement token blacklist for immediate revocation
    */
-  async logout(userId: number) {
+  logout(userId: number) {
     this.logger.log(`User ${userId} logged out`);
   }
 }

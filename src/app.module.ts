@@ -4,6 +4,7 @@ import { PrismaModule } from './prisma/prisma.module.js';
 import { UserModule } from './modules/user/user.module.js';
 import { WineModule } from './modules/wine/wine.module.js';
 import { AuthModule } from './modules/auth/auth.module.js';
+import { AppController } from './app.controller.js';
 
 @Module({
   imports: [
@@ -13,5 +14,6 @@ import { AuthModule } from './modules/auth/auth.module.js';
     WineModule,
     AuthModule,
   ],
+  controllers: [AppController],
 })
 export class AppModule {}

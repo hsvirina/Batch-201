@@ -31,6 +31,13 @@ Built with **NestJS**, **Prisma ORM**, and **JWT authentication**, following bes
 
 ---
 
+## Testing
+
+The project includes end-to-end (E2E) tests implemented with Jest and Supertest.
+Tests cover authentication flow and protected user endpoints.
+
+---
+
 ## Architecture
 
 ```text

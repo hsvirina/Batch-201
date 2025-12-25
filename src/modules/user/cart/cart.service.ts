@@ -1,6 +1,11 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service.js';
 import { CartItemResponseDto } from './dto/add-to-cart.dto.js';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class CartService {
@@ -15,7 +20,11 @@ export class CartService {
    * - Throws BadRequestException if quantity < 1.
    * - Returns a DTO for safe client response.
    */
-  async add(userId: number, wineId: number, quantity: number): Promise<CartItemResponseDto> {
+  async add(
+    userId: number,
+    wineId: number,
+    quantity: number,
+  ): Promise<CartItemResponseDto> {
     const wine = await this.prisma.wine.findUnique({ where: { id: wineId } });
     if (!wine) throw new NotFoundException('Wine not found');
     if (quantity < 1) throw new BadRequestException('Quantity must be >= 1');
@@ -49,7 +58,11 @@ export class CartService {
    * - Includes related wine information.
    * - Returns an array of DTOs for safe client consumption.
    */
-  async list(userId: number, page = 1, limit = 20): Promise<CartItemResponseDto[]> {
+  async list(
+    userId: number,
+    page = 1,
+    limit = 20,
+  ): Promise<CartItemResponseDto[]> {
     const items = await this.prisma.cartItem.findMany({
       where: { userId },
       include: { wine: true },
@@ -57,7 +70,7 @@ export class CartService {
       take: limit,
     });
 
-    return items.map(this.mapToDto);
+    return items.map((item) => this.mapToDto(item));
   }
 
   /**
@@ -67,17 +80,19 @@ export class CartService {
    * - Exposes only safe fields.
    * - Converts Decimal price to string for consistent API output.
    */
-  private mapToDto(item: any): CartItemResponseDto {
+  private mapToDto(
+    item: Prisma.CartItemGetPayload<{ include: { wine: true } }>,
+  ): CartItemResponseDto {
     const { wine } = item;
     return {
       wineId: wine.id,
       name: wine.name,
       quantity: item.quantity,
-      vintage: wine.vintage,
-      type: wine.type,
-      color: wine.color,
+      vintage: wine.vintage ?? undefined,
+      type: wine.type ?? undefined,
+      color: wine.color ?? undefined,
       price: wine.price?.toString(),
-      photoUrl: wine.photoUrl,
+      photoUrl: wine.photoUrl ?? undefined,
     };
   }
 }

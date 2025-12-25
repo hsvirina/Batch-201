@@ -2,7 +2,7 @@ import { IsInt, Min } from 'class-validator';
 
 /**
  * DTO for adding/updating an item in the user's cart
- * 
+ *
  * Responsibilities:
  * - Validate incoming payload
  * - Ensure quantity is a positive integer
@@ -16,7 +16,7 @@ export class AddToCartDto {
 
 /**
  * DTO for cart item response
- * 
+ *
  * Responsibilities:
  * - Define safe fields to expose to the client
  * - Prevent leaking database internals (like userId, cartItemId)
@@ -31,7 +31,7 @@ export class CartItemResponseDto {
   vintage?: number;
   type?: string;
   color?: string;
-  price?: string;      // Use string for precision and avoid float issues on client
+  price?: string; // Use string for precision and avoid float issues on client
   photoUrl?: string;
 
   /**

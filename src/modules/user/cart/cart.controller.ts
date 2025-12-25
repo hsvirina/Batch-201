@@ -1,18 +1,18 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Delete, 
-  Param, 
-  Body, 
-  UseGuards, 
-  Req, 
-  ParseIntPipe, 
-  HttpCode 
+import {
+  Controller,
+  Get,
+  Post,
+  Delete,
+  Param,
+  Body,
+  UseGuards,
+  Req,
+  ParseIntPipe,
+  HttpCode,
 } from '@nestjs/common';
 import { CartService } from './cart.service.js';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard.js';
-import { AddToCartDto } from './dto/add-to-cart.dto.js';
+import { AddToCartDto, CartItemResponseDto } from './dto/add-to-cart.dto.js';
 import { Request } from 'express';
 
 /**
@@ -47,7 +47,7 @@ export class CartController {
    * Supports pagination at service level if needed.
    */
   @Get()
-  async getCart(@Req() req: AuthRequest) {
+  async getCart(@Req() req: AuthRequest): Promise<CartItemResponseDto[]> {
     return this.cartService.list(req.user.sub);
   }
 
@@ -65,8 +65,8 @@ export class CartController {
   async addToCart(
     @Req() req: AuthRequest,
     @Param('wineId', ParseIntPipe) wineId: number,
-    @Body() dto: AddToCartDto
-  ) {
+    @Body() dto: AddToCartDto,
+  ): Promise<CartItemResponseDto> {
     return this.cartService.add(req.user.sub, wineId, dto.quantity);
   }
 
@@ -83,7 +83,7 @@ export class CartController {
   @HttpCode(204)
   async removeFromCart(
     @Req() req: AuthRequest,
-    @Param('wineId', ParseIntPipe) wineId: number
+    @Param('wineId', ParseIntPipe) wineId: number,
   ) {
     await this.cartService.remove(req.user.sub, wineId);
   }
