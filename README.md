@@ -60,8 +60,13 @@ root/
 │
 ├─ prisma/
 │  └─ schema.prisma         # Database schema
+│  
+├─ test/                    # End-to-end tests
+│  ├─ app.e2e-spec.ts
+│  └─ jest-e2e.config.cjs
 │
 ├─ package.json
 ├─ tsconfig.json
 └─ README.md
+
 
